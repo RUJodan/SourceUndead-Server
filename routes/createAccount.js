@@ -9,10 +9,9 @@ async function createAccount(user, pass, email) {
   const check = 'SELECT COUNT(username) AS count FROM players WHERE username=$1';
   let params = [user];
   const data = await query(check, params);
-  console.log(data.rows[0]);
   if (Number(data.rows[0].count)) {
     return {
-      msg: 'This username has been taken!',
+      msg: 'This username has been taken',
       flag: true,
     };
   }
@@ -24,7 +23,7 @@ async function createAccount(user, pass, email) {
   await query(sql, params);
 
   return {
-    msg: 'Your account was created! You will be redirected to the login page in 2 seconds.',
+    msg: 'Your account was created! You will be redirected to the login page in 2 seconds',
     flag: false,
   };
 }
@@ -43,12 +42,14 @@ router.route('/')
     const { username, password, email } = req.body;
     if (!username || !password || !email) {
       return res.json({
-        msg: 'Please fill out all form fields.',
+        msg: 'Please fill out all form fields',
         flag: true,
       });
     }
-    const json = await createAccount(username, password, email);
-    return res.json(json); // create/reject account, send to user
+    const response = await createAccount(username, password, email);
+
+    // create/reject account, send to user
+    return res.json(response);
   });
 
 export default router;

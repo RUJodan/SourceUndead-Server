@@ -2,10 +2,22 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import redis from 'redis';
 import cors from 'cors';
+import logger from 'winston';
 
 // GET/POST routing (JSX templates, POST functions)
 // import login from './routes/login';
 import createAccount from './routes/createAccount';
+import login from './routes/login';
+
+// configure winston logging
+const log = logger.createLogger({
+  level: 'info',
+  format: logger.format.json(),
+  transports: [
+    new logger.transports.Console(),
+    new logger.transports.File({ filename: 'sourceundead.log' }),
+  ],
+});
 
 const app = express();
 
@@ -28,9 +40,10 @@ app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
 // create the server
 const server = app.listen(8080, () => {
   const { port } = server.address();
-  console.log(`SourceUndead has risen from the grave on port ${port}`);
+  log.info(`SourceUndead has risen from the grave on port ${port}`);
 });
 
 app.use('/create-account', createAccount);
+app.use('/login', login);
 
-export default client;
+export { client, log };
