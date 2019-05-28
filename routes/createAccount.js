@@ -21,8 +21,6 @@ async function createAccount(user, pass, email) {
   const sql = 'INSERT INTO players (username, email, password) VALUES ($1, $2, $3)';
   params = [user, email, password];
 
-  console.log(params);
-
   await query(sql, params);
 
   return {
