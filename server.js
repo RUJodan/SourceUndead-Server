@@ -1,12 +1,16 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import redis from 'redis';
+import cors from 'cors';
 
 // GET/POST routing (JSX templates, POST functions)
 // import login from './routes/login';
 import createAccount from './routes/createAccount';
 
 const app = express();
+
+// allow cross origin requests
+app.use(cors());
 
 // create redis handler
 // MAKE SURE REDIS IS RUNNING THIS TIME, YOU ASSJACK
