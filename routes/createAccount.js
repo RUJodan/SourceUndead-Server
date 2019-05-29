@@ -1,8 +1,5 @@
-import express from 'express';
 import bcrypt from 'bcryptjs';
 import query from '../db';
-
-const router = express.Router();
 
 async function createAccount(user, pass, email) {
   // check if username already exists
@@ -36,20 +33,17 @@ async function createAccount(user, pass, email) {
     - If user exists, reject request and send error back
     - Create the user account
  */
-router.route('/')
-  .post(async (req, res) => {
-    // destructure form body into constants
-    const { username, password, email } = req.body;
-    if (!username || !password || !email) {
-      return res.json({
-        msg: 'Please fill out all form fields',
-        flag: true,
-      });
-    }
-    const response = await createAccount(username, password, email);
+export default async function wsCreateAccount(payload, io) {
+  // destructure form body into constants
+  const { username, password, email } = payload;
+  if (!username || !password || !email) {
+    io.emit('create-account', {
+      msg: 'Please fill out all form fields',
+      flag: true,
+    });
+  }
+  const response = await createAccount(username, password, email);
 
-    // create/reject account, send to user
-    return res.json(response);
-  });
-
-export default router;
+  // create/reject account, send to user
+  io.emit('create-account', response);
+}

@@ -1,8 +1,5 @@
-import express from 'express';
 import bcrypt from 'bcryptjs';
 import query from '../db';
-
-const router = express.Router();
 
 // log user into dashboard
 async function login(user) {
@@ -10,8 +7,6 @@ async function login(user) {
   const sql = 'SELECT id, username, password FROM players WHERE username = $1';
   const params = [user];
   const data = await query(sql, params);
-
-  console.log(data.rows);
 
   // if results, return them, otherwise return false (non existing account)
   if (!data.rows.length) return false;
@@ -26,43 +21,39 @@ async function login(user) {
     - If user exists, check password for validity, then create session
     - Reject if account does not exist or password is wrong
  */
-router.route('/')
-  .post(async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res.json({
-        msg: 'Please fill out all form fields',
-        flag: true,
-      });
-    }
-
-    const user = await login(username);
-    const response = {
+export default async function wsLogin(payload, io) {
+  const { username, password } = payload;
+  if (!username || !password) {
+    io.emit('login', {
+      msg: 'Please fill out all form fields',
       flag: true,
-      msg: '',
-    };
+    });
+  }
 
-    console.log(user);
+  const user = await login(username);
+  const response = {
+    flag: true,
+    msg: '',
+  };
 
-    // fetch player details
-    if (!user) {
-      response.msg = 'Your username/password is incorrect';
-      return res.json(response);
-    }
+  // fetch player details
+  if (!user) {
+    response.msg = 'Your username/password is incorrect';
+    response.flag = true;
+    io.emit('login', response);
+  }
 
-    // compare to password hash
-    const bool = await bcrypt.compare(password, user[0].password);
+  // compare to password hash
+  const bool = await bcrypt.compare(password, user[0].password);
 
-    if (bool) {
-      response.msg = 'You have logged in';
-      response.flag = false;
-    } else {
-      // reject, password is wrong
-      response.msg = 'Your username/password is incorrect';
-      response.flag = true;
-    }
+  if (bool) {
+    response.msg = 'You have logged in';
+    response.flag = false;
+  } else {
+    // reject, password is wrong
+    response.msg = 'Your username/password is incorrect';
+    response.flag = true;
+  }
 
-    return res.json(response);
-  });
-
-export default router;
+  io.emit('login', response);
+}
