@@ -28,6 +28,7 @@ export default async function wsLogin(payload, io) {
       msg: 'Please fill out all form fields',
       flag: true,
     });
+    return;
   }
 
   const user = await login(username);
@@ -37,13 +38,15 @@ export default async function wsLogin(payload, io) {
   };
 
   // fetch player details
-  if (!user) {
+  if (user === false) {
     response.msg = 'Your username/password is incorrect';
     response.flag = true;
     io.emit('login', response);
+    return;
   }
 
   // compare to password hash
+  console.log(user);
   const bool = await bcrypt.compare(password, user[0].password);
 
   if (bool) {

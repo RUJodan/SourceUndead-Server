@@ -41,6 +41,7 @@ export default async function wsCreateAccount(payload, io) {
       msg: 'Please fill out all form fields',
       flag: true,
     });
+    return;
   }
   const response = await createAccount(username, password, email);
 
