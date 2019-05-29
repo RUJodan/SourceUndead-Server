@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import query from '../db';
+import query from '../database/db';
 
 // log user into dashboard
 async function login(user) {

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import query from '../db';
+import query from '../database/db';
 
 async function createAccount(user, pass, email) {
   // check if username already exists

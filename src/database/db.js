@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 import logger from 'winston';
-import settings from './settings';
+import settings from '../../settings';
 
 // create config object
 const dbConfig = {
