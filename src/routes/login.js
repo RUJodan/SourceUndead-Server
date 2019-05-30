@@ -1,4 +1,6 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import secret from '../../key';
 import query from '../database/db';
 
 // log user into dashboard
@@ -46,12 +48,13 @@ export default async function wsLogin(payload, io) {
   }
 
   // compare to password hash
-  console.log(user);
   const bool = await bcrypt.compare(password, user[0].password);
 
   if (bool) {
+    const token = jwt.sign(user[0], secret.key);
     response.msg = 'You have logged in';
     response.flag = false;
+    response.token = token;
   } else {
     // reject, password is wrong
     response.msg = 'Your username/password is incorrect';
