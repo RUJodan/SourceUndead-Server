@@ -75,6 +75,10 @@ io.sockets.on('connection', (socket) => {
     socket.disconnect(true);
   });
 
+  socket.on('logout', () => {
+    socket.disconnect(true);
+  });
+
   socket.on('create-account', payload => wsCreateAccount(payload, io));
   socket.on('login', payload => wsLogin(payload, io));
 });
